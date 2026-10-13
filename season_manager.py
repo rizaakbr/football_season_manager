@@ -675,10 +675,17 @@ with tab2:
             st.write(f"Kebutuhan pemain: {req}")
 
             st.subheader("2) Pilih 11 Pemain Starting XI")
+            urutan_pos = {"GK": 0, "DEF": 1, "MID": 2, "FWD": 3}
+            daftar = clean_df.drop_duplicates("name").copy()
+            daftar["_u"] = daftar["position"].map(urutan_pos).fillna(9)
+            daftar = daftar.sort_values(["_u", "name"])
+            pos_of = dict(zip(daftar["name"], daftar["position"]))
             chosen_names = st.multiselect(
                 "Pilih pemain (harus sesuai jumlah kebutuhan formasi):",
-                clean_df["name"].tolist(),
+                daftar["name"].tolist(),
+                format_func=lambda n: f"[{pos_of[n]}] {n}",
                 key="s2_squad",
+                help="Daftar diurutkan per posisi: GK, DEF, MID, FWD. Ketik 'DEF' atau 'FWD' untuk menyaring.",
             )
             squad_df = clean_df[clean_df["name"].isin(chosen_names)].copy()
 
